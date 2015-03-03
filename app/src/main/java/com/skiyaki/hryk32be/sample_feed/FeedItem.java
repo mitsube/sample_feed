@@ -8,6 +8,7 @@ public class FeedItem {
     String name;
     String description;
     String url;
+    String image;
 
     public long getId() {
         return id;
@@ -39,5 +40,13 @@ public class FeedItem {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
