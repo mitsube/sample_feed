@@ -3,6 +3,7 @@ package com.skiyaki.hryk32be.sample_feed;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,19 +16,25 @@ import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
 
-    ArrayList<FeedItem> items = null;
-    FeedItemAdapter feed_item_adapter = null;
+    protected ListView blog_feed;
+    protected ListView youtube_feed;
+    private FeedItemAdapter blog_adapter;
+    private FeedItemAdapter youtube_adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        renderListView((ListView) findViewById(R.id.feed_items));
-        renderListView((ListView) findViewById(R.id.youtube_items));
-
+        blog_adapter = new FeedItemAdapter(this);
+        blog_feed = (ListView) findViewById(R.id.feed_items);
+        adaptListView(blog_feed, blog_adapter);
         requestLivedoorBlog("http://blog.livedoor.jp/gumbycomics/index.rdf");
-        requestYoutube("Anthrax");
+
+        youtube_adapter = new FeedItemAdapter(this);
+        youtube_feed = (ListView) findViewById(R.id.youtube_items);
+        adaptListView(youtube_feed, youtube_adapter);
+        requestYoutube("あおむろひろゆき");
         renderingTabView();
     }
 
@@ -73,10 +80,9 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    private void renderListView(ListView feed_items) {
+    private void adaptListView(ListView feed_items, FeedItemAdapter feed_item_adapter) {
 
-        items = new ArrayList<FeedItem>();
-        feed_item_adapter = new FeedItemAdapter(this);
+        ArrayList<FeedItem> items = new ArrayList<>();
         feed_item_adapter.setFeedItem(items);
         feed_items.setAdapter(feed_item_adapter);
 
@@ -84,7 +90,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getBaseContext(), ShowActivity.class);
-                FeedItem item = (FeedItem) items.get(position);
+                FeedItem item = (FeedItem) parent.getItemAtPosition(position);
                 startActivity(intent.putExtra("url", item.getUrl()));
             }
         });
@@ -93,21 +99,19 @@ public class MainActivity extends ActionBarActivity {
 
     private void requestLivedoorBlog(String url) {
         try {
-            AsyncHttpRequest task = new AsyncHttpRequest(this, items, feed_item_adapter);
-            task.parent = this;
+            AsyncHttpRequest task = new AsyncHttpRequest(blog_adapter);
             task.execute(url);
         } catch (Exception e) {
-            System.out.println(e);
+            Log.d("AsyncHttpRequest", String.valueOf(e.getMessage()));
         }
     }
 
     private void requestYoutube(String word) {
         try {
-            YoutubeSearch task = new YoutubeSearch(this, items, feed_item_adapter);
-            task.parent = this;
+            YoutubeSearch task = new YoutubeSearch(youtube_adapter);
             task.execute(word);
         } catch (Exception e) {
-            System.out.println(e);
+            Log.d("YoutubeSearch", String.valueOf(e.getMessage()));
         }
     }
 

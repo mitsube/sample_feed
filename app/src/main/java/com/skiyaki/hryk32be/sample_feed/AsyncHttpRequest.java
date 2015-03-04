@@ -1,6 +1,5 @@
 package com.skiyaki.hryk32be.sample_feed;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
@@ -20,16 +19,12 @@ import java.util.ArrayList;
  */
 public class AsyncHttpRequest extends AsyncTask<String, Void, String> {
 
-    public Activity parent;
     private String Response;
 
-    private ArrayList feed_item_list;
-    private FeedItemAdapter feed_adapter;
+    public FeedItemAdapter feed_adapter;
 
-    public AsyncHttpRequest(Activity activity, ArrayList<FeedItem> list, FeedItemAdapter adapter) {
-        feed_item_list = list;
+    public AsyncHttpRequest(FeedItemAdapter adapter) {
         feed_adapter = adapter;
-        parent = activity;
     }
 
     @Override
@@ -86,7 +81,7 @@ public class AsyncHttpRequest extends AsyncTask<String, Void, String> {
                     case XmlPullParser.END_TAG:
                         tag = parser.getName();
                         if (tag.equals("item")) {
-                            feed_item_list.add(feed_item);
+                            feed_adapter.feedItem.add(feed_item);
                             feed_adapter.notifyDataSetChanged();
                         }
                         break;

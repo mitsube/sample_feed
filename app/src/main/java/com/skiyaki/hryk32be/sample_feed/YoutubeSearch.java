@@ -26,9 +26,6 @@ import java.util.List;
  */
 public class YoutubeSearch extends AsyncTask<String, Void, String>{
 
-    /** Global instance properties filename. */
-    private static String PROPERTIES_FILENAME = "youtube.properties";
-
     /** Global instance of the HTTP transport. */
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 
@@ -41,16 +38,12 @@ public class YoutubeSearch extends AsyncTask<String, Void, String>{
     /** Global instance of Youtube object to make all API requests. */
     private static YouTube youtube;
 
-    public Activity parent;
     private String Response;
 
-    private ArrayList feed_item_list;
-    private FeedItemAdapter feed_adapter;
+    private FeedItemAdapter youtube_adapter;
 
-    public YoutubeSearch(Activity activity, ArrayList<FeedItem> list, FeedItemAdapter adapter) {
-        feed_item_list = list;
-        feed_adapter = adapter;
-        parent = activity;
+    public YoutubeSearch(FeedItemAdapter adapter) {
+        youtube_adapter = adapter;
         System.out.println("START!!");
     }
 
@@ -125,8 +118,8 @@ public class YoutubeSearch extends AsyncTask<String, Void, String>{
                 feed_item.setName(singleVideo.getSnippet().getTitle());
                 feed_item.setImage(thumbnail.getUrl());
 
-                this.feed_item_list.add(feed_item);
-                this.feed_adapter.notifyDataSetChanged();
+                youtube_adapter.feedItem.add(feed_item);
+                youtube_adapter.notifyDataSetChanged();
 
                 System.out.println(" Video Id" + rId.getVideoId());
                 System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
