@@ -51,6 +51,7 @@ public class FeedItemAdapter extends BaseAdapter {
         ((TextView)convertView.findViewById(R.id.name)).setText(feedItem.get(position).getName());
         ((TextView)convertView.findViewById(R.id.description)).setText(feedItem.get(position).getDescription());
 
+        /*
         TextView textview = (TextView) convertView.findViewById(R.id.description);
         String urlString= feedItem.get(position).getImage();
 
@@ -64,7 +65,7 @@ public class FeedItemAdapter extends BaseAdapter {
         } catch (Exception e) {
             System.out.println("nuu: "+e);
         }
-
+        */
 
         return convertView;
     }

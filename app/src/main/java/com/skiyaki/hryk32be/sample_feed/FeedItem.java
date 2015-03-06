@@ -35,7 +35,11 @@ public class FeedItem {
     }
 
     public String getUrl() {
-        return url;
+        if (url == null) {
+            return "";
+        } else {
+            return url;
+        }
     }
 
     public void setUrl(String url) {
@@ -43,7 +47,11 @@ public class FeedItem {
     }
 
     public String getImage() {
-        return image;
+        if (image == null) {
+            return "";
+        } else {
+            return image;
+        }
     }
 
     public void setImage(String image) {

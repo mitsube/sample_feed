@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -14,12 +15,16 @@ import android.widget.TabHost;
 
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements AbsListView.OnScrollListener, Callback {
 
     protected ListView blog_feed;
     protected ListView youtube_feed;
     private FeedItemAdapter blog_adapter;
     private FeedItemAdapter youtube_adapter;
+    private YoutubeSearch youtube_search;
+    private String SEARCH_WORD = "Anthax";
+    private String next_page_token = null;
+    private Integer current_page = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +39,9 @@ public class MainActivity extends ActionBarActivity {
         youtube_adapter = new FeedItemAdapter(this);
         youtube_feed = (ListView) findViewById(R.id.youtube_items);
         adaptListView(youtube_feed, youtube_adapter);
-        requestYoutube("あおむろひろゆき");
+        youtube_feed.setOnScrollListener(this);
+        youtube_feed.addFooterView(getFooter());
+        additionalReading();
         renderingTabView();
     }
 
@@ -58,6 +65,18 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        if (totalItemCount == firstVisibleItem + visibleItemCount) {
+            additionalReading();
+        }
     }
 
     private void renderingTabView() {
@@ -108,11 +127,36 @@ public class MainActivity extends ActionBarActivity {
 
     private void requestYoutube(String word) {
         try {
-            YoutubeSearch task = new YoutubeSearch(youtube_adapter);
-            task.execute(word);
+            youtube_search = new YoutubeSearch(MainActivity.this, youtube_feed, youtube_adapter);
+            youtube_search.execute(word, String.valueOf(current_page), next_page_token);
         } catch (Exception e) {
             Log.d("YoutubeSearch", String.valueOf(e.getMessage()));
         }
+        current_page += 1;
     }
 
+    private View getFooter() {
+        View mFooter = null;
+        if (mFooter == null) {
+            mFooter = getLayoutInflater().inflate(R.layout.loading_footer,null);
+        }
+        return mFooter;
+    }
+
+    private void invisibleFooter() {
+        youtube_feed.removeFooterView(getFooter());
+    }
+
+    private void additionalReading() {
+        if (youtube_search != null && youtube_search.getStatus() == YoutubeSearch.Status.RUNNING) {
+            return;
+        } else {
+            requestYoutube(SEARCH_WORD);
+        }
+    }
+
+    @Override
+    public void callback(String token) {
+        next_page_token = token;
+    }
 }
